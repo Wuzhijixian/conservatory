@@ -22,7 +22,7 @@
                 style="width: 100%">
                 <el-table-column
                 label="用户ID"
-                width="180">
+                width="80">
                 <template slot-scope="scope">
                     <i class="el-icon-time"></i>
                     <span style="margin-left: 10px">{{ scope.row.id }}</span>
@@ -30,7 +30,7 @@
                 </el-table-column>
                 <el-table-column
                 label="用户昵称"
-                width="180">
+                width="120">
                 <template slot-scope="scope">
                     <el-popover trigger="hover" placement="top">
                     <p>手机_账户: {{ scope.row.user_phone }}</p>
@@ -46,7 +46,15 @@
                 >
                 <template slot-scope="scope">
                     <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{{ scope.row.created_time }}</span>
+                    <span style="margin-left: 10px">{{ scope.row.created_at }}</span>
+                </template>
+                </el-table-column>
+                <el-table-column
+                label="修改时间"
+                >
+                <template slot-scope="scope">
+                    <i class="el-icon-time"></i>
+                    <span style="margin-left: 10px">{{ scope.row.updated_at }}</span>
                 </template>
                 </el-table-column>
                 <el-table-column label="操作">
@@ -88,8 +96,11 @@
    
 </template>
 <script>
-import axios from 'axios';
-import users from './../api/user'
+// import axios from 'axios';
+import axios from './../request/request'
+import users from './../request/api/user'
+import newtime from './../method/time'
+
 export default {
   data() {
     return {
@@ -109,23 +120,28 @@ export default {
   },
   methods:{
       judgevalue:function(){
-          if(this.phone.search(/^1[3456789]\d{9}$/) == -1){
-              this.$message('请填写正确手机号码');
-              if(this.dialogVisible){
-                this.newphone = '';  
-              }
-              this.phone = '';
-              
-          }
+          
+        if(this.dialogVisible){
+            if(this.newphone.search(/^1[3456789]\d{9}$/) == -1){
+                this.$message('请填写正确手机号码');
+                this.newphone = '';
+            } 
+        }else{
+            if(this.phone.search(/^1[3456789]\d{9}$/) == -1){
+                this.$message('请填写正确手机号码');
+                this.phone = '';
+            } 
+        }
       },
       adduser:function(){
-          let url = users.adduser();
-          let time = users.newTime()
+          let url = users.adduser;
+          let time = newtime.Time();
+          console.time(time,123123123131);
           if(this.code && this.name && this.phone){
               axios.post( url,{
                   user_name:this.name,
                   user_code:this.code,
-                  created_time:time,
+                  created_at:time,
                   user_phone:this.phone
               }).then((res)=>{
                 console.log(res);
@@ -150,7 +166,7 @@ export default {
           
       },
       getuser:function(){
-          let url = users.getalluser();
+          let url = users.getalluser;
                 axios.get( url,{
               }).then((res)=>{
                 if(res.data.code == 200){
@@ -174,7 +190,7 @@ export default {
         this.dialogVisible = true
       },
       handleDelete(index, row) {
-        let url = users.deleteuser()
+        let url = users.deleteuser;
         let id = row.id;
         axios.delete( url + id,{
         }).then((res)=>{
@@ -194,8 +210,8 @@ export default {
         });
       },
       editUser(){
-        let created_time = users.newTime();
-        let url = users.edituser()
+        let updated_at = newtime.Time();
+        let url = users.edituser
         let id = this.newid;
         let user_name = this.newname;
         let user_code = this.newcode;
@@ -204,7 +220,7 @@ export default {
             user_name,
             user_code,
             user_phone,
-            created_time
+            updated_at
         }).then((res)=>{
         console.log(res);
             if(res.data.code == 200){

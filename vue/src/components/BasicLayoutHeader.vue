@@ -22,23 +22,60 @@
 </template>
 <script>
 import Breadcrumb from "@/components/BasicBreadcrumb.vue";
+import axios from './../request/request'
+import users from './../request/api/user'
 export default {
     name:'BasicLayoutHeader',
      components: {
         Breadcrumb
     },
-    // computed:{
-    //     headerTitle:function(){
-    //         console.log(this.$route);
-    //         return this.$route.matched.filter(data => data.meta && data.meta.breadcrumb).map(item => {
-    //             console.log(item)
-    //             return {
-    //                 name:item.meta.breadcrumb.title,
-    //                 link:item.meta.breadcrumb.replace ? { name: item.name } : undefined
-    //             }
-    //         })
-    //     }
-    // },
+    created:function(){
+        console.log(this.deal);
+        let token = this.deal;
+        if(!token.liuyinsheusertoken){
+            this.$router.push({ path:'/login'})
+        }
+        let url = users.judge;
+        axios.post( url,{
+                  token:token.usertoken
+              }).then((res)=>{
+                console.log(res);
+                if(res.data.code !== 200){
+                    this.$router.push({ path:'/login'})
+                }
+                })
+                .catch((e)=> {
+                    this.$router.push({ path:'/login'})
+                })
+                .finally(function () {
+                });
+
+    },
+    computed:{
+        // headerTitle:function(){
+        //     console.log(this.$route);
+        //     return this.$route.matched.filter(data => data.meta && data.meta.breadcrumb).map(item => {
+        //         console.log(item)
+        //         return {
+        //             name:item.meta.breadcrumb.title,
+        //             link:item.meta.breadcrumb.replace ? { name: item.name } : undefined
+        //         }
+        //     })
+        // }
+        deal: function(){ 
+          var cookie = document.cookie;
+          console.log(cookie)
+          var arr = cookie.split(';');
+          console.log(arr);
+          var obj = {};
+          arr.forEach(function(item){
+            var itemArr = item.split('=');
+              obj[itemArr[0].trim()] = itemArr[1].trim();
+          })
+          
+          return obj;
+        }
+    },
 }
 </script>
 <style lang="less">

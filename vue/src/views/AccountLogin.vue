@@ -57,8 +57,10 @@
 
 <script>
 
-import axios from 'axios';
-import users from './../api/user'
+// import axios from 'axios';
+import axios from './../request/request'
+import users from './../request/api/user'
+import newtime from './../method/time'
 
 export default {
   data() {
@@ -128,22 +130,25 @@ export default {
      let formName;
      let name = null;
      let code =null;
-     let url = users.verifyUser();
+     let url = users.verifyUser;
     if(this.show == 1){
       name = this.rules1.input1;
       code = this.rules1.input2
       formName = 'rules1';
     }else{
-       name = this.rules2.input1;
+      name = this.rules2.input1;
       code = this.rules2.input2
       formName = 'rules2';
     }
      this.$refs[formName].validate((valid) => {
       if (valid) {
-        axios.get( url + '?user_phone=' + name + '&user_code=' + code)
+        axios.post( url,{
+          user_phone:name,
+          user_code:code
+        })
         .then((res)=>{
           if(res.data.code == 200){
-            document.cookie ="usertoken=" + res.data.token + ';';
+            document.cookie ='liuyinusertoken=' + res.data.token + ';';
             this.$router.push({ path:'/'})
           }else{
             this.$message('账号或者密码错误，请重新填写');
